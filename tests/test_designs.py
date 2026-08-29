@@ -66,3 +66,25 @@ def test_planar_design():
     assert design.main_chip is not None
     assert design.chip_centre() == (0.0, 0.0)
     assert design.chip_extent() == (9000.0, 6000.0)
+
+
+def test_design_listeners():
+    design = PlanarDesign()
+    events = []
+
+    def callback(d):
+        events.append(len(d.components))
+
+    design.add_listener(callback)
+    TransmonPocket(design, "Q1")
+    assert events == [1]
+
+    TransmonPocket(design, "Q2")
+    assert events == [1, 2]
+
+    design.remove_component("Q1")
+    assert events == [1, 2, 1]
+
+    design.remove_listener(callback)
+    TransmonPocket(design, "Q3")
+    assert events == [1, 2, 1]

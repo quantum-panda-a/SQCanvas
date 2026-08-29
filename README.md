@@ -133,12 +133,14 @@ print(f"GDSII 版图已生成: {gds_file}")
 uv run python -m qcanvas.gui
 ```
 
-或在 Python 代码中呼出：
+或在 Python 脚本或 Jupyter Notebook 中作为实时看板打开：
 
 ```python
-import qcanvas.gui
+# 方式 1：Jupyter Notebook 实时看板模式（非阻塞，支持后续 Cell 动态更新）
+gui = design.open_gui()  # 或 qcanvas.gui.launch(design)
 
-# 传入已有设计并启动
+# 方式 2：标准独立脚本模式（阻塞主线程保持窗口运行）
+import qcanvas.gui
 qcanvas.gui.run(design)
 ```
 

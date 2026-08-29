@@ -80,3 +80,35 @@ def test_gds_exporter_positive_and_ground_plane():
         layer1_polys = [p for p in cell.polygons if p.layer == 1]
         assert len(layer1_polys) >= 1
         assert any(len(p.points) > 5 for p in layer1_polys)
+
+
+def test_overlapping_ground_guards():
+    design = PlanarDesign()
+    TransmonPocket(design, "Q1", options={"pos_x": "-400um", "pos_y": "0um", "ground_guard": "100um"})
+    TransmonPocket(
+        design,
+        "Q2",
+        options={
+            "pos_x": "400um",
+            "pos_y": "0um",
+            "orientation": "45",
+            "ground_guard": "250um",
+        },
+    )
+
+    # Matplotlib export test
+    fig = design.export("mpl")
+    assert isinstance(fig, Figure)
+    plt.close(fig)
+
+    # GDS export test without full chip ground plane
+    with tempfile.TemporaryDirectory() as tmpdir:
+        out = os.path.join(tmpdir, "overlap.gds")
+        path = export_gds(design, filepath=out, ground_plane=False)
+        assert os.path.exists(path)
+        import gdstk
+
+        lib = gdstk.read_gds(path)
+        cell = lib.top_level()[0]
+        ground_polys = [p for p in cell.polygons if p.layer == 1]
+        assert len(ground_polys) >= 1

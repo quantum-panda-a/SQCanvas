@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+from collections.abc import Callable
 from copy import deepcopy
 from typing import TYPE_CHECKING, Any
 
@@ -42,8 +43,34 @@ class Design:
         self.overwrite_enabled = overwrite_enabled
         self._metadata = AttrDict(design_name=self.name, notes="")
         self._exporter_cache: dict[str, Exporter] = {}
+        self._change_listeners: list[Callable[[Design], None]] = []
         if metadata:
             self._metadata.update(metadata)
+
+    # ------------------------------------------------------- change listeners
+    def add_listener(self, listener: Callable[[Design], None]) -> None:
+        """Register a callback to be invoked whenever the design changes."""
+        if listener not in self._change_listeners:
+            self._change_listeners.append(listener)
+
+    def remove_listener(self, listener: Callable[[Design], None]) -> None:
+        """Unregister a previously added change callback."""
+        if listener in self._change_listeners:
+            self._change_listeners.remove(listener)
+
+    def notify_changed(self) -> None:
+        """Notify all registered listeners that the design content has updated."""
+        for listener in list(self._change_listeners):
+            try:
+                listener(self)
+            except Exception:
+                pass
+
+    def open_gui(self) -> Any:
+        """Launch the desktop GUI viewer for this design non-blockingly."""
+        from qcanvas.gui import launch
+
+        return launch(self)
 
     # ------------------------------------------------------- component registry
     def register_component(self, component: Component) -> None:
@@ -59,6 +86,7 @@ class Design:
             raise KeyError(f"No component named '{name}' on design '{self.name}'.")
         self.remove_shapes(component=name)
         del self.components[name]
+        self.notify_changed()
 
     def remove_shapes(self, *, component: str | None = None, label: str | None = None) -> int:
         """Drop shapes from the store (optionally scoped to a component/label)."""
@@ -78,6 +106,7 @@ class Design:
         self._shapes.clear()
         for component in self.components.values():
             component.make()
+        self.notify_changed()
 
     # ------------------------------------------------------- shapes access
     @property

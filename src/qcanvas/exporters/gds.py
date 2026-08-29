@@ -59,23 +59,33 @@ def export_gds(
     top = library.new_cell(design.name or "TOP")
     records = design.shapes.as_records()
 
+    subtracts = [r.geometry for r in records if r.subtract and not r.geometry.is_empty]
+    ground_records = [r.geometry for r in records if r.label == "ground" and not r.subtract and not r.geometry.is_empty]
+    other_records = [
+        r
+        for r in records
+        if not r.helper and not r.subtract and r.label != "ground" and not r.geometry.is_empty
+    ]
+
     if ground_plane and hasattr(design, "chip_extent"):
         cx, cy = design.chip_centre()
         w, h = design.chip_extent()
-        ground = box(cx - w / 2.0, cy - h / 2.0, cx + w / 2.0, cy + h / 2.0)
-        subtracts = [r.geometry for r in records if r.subtract and not r.geometry.is_empty]
+        chip_box = box(cx - w / 2.0, cy - h / 2.0, cx + w / 2.0, cy + h / 2.0)
+        ground_geoms = [chip_box] + ground_records
+        ground = union(*ground_geoms)
+        if subtracts:
+            ground = ground.difference(union(*subtracts))
+        if not ground.is_empty:
+            _add_geometry(top, ground, layer=ground_layer, datatype=ground_datatype, width=None)
+    elif ground_records:
+        ground = union(*ground_records)
         if subtracts:
             ground = ground.difference(union(*subtracts))
         if not ground.is_empty:
             _add_geometry(top, ground, layer=ground_layer, datatype=ground_datatype, width=None)
 
-    for record in records:
-        if record.helper or record.subtract:
-            continue
-        geom = record.geometry
-        if geom is None or geom.is_empty:
-            continue
-        _add_geometry(top, geom, layer=record.layer, datatype=0, width=record.width)
+    for record in other_records:
+        _add_geometry(top, record.geometry, layer=record.layer, datatype=0, width=record.width)
 
     # Junk-free export: use the parent directory as workdir so relative paths resolve.
     library.write_gds(str(filepath))

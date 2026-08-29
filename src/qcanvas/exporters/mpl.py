@@ -9,6 +9,7 @@ from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
 from qcanvas.config import DISPLAY_STYLES
+from qcanvas.draw import union
 from qcanvas.draw.mpl import draw_records
 from qcanvas.exporters.base import Exporter
 
@@ -59,6 +60,7 @@ def export_scene(
         fig, ax = plt.subplots(figsize=figsize)
     else:
         fig = ax.get_figure()
+        ax.clear()
 
     components = set(components) if components is not None else None
     layers = set(layers) if layers is not None else None
@@ -81,7 +83,26 @@ def export_scene(
             (cx - w / 2, cy - h / 2),
         ]
 
-    draw_records(ax, [record.__dict__ for record in records], styles=styles, outline=True, chip_outline=outline)
+    subtracts = [r.geometry for r in records if r.subtract and not r.geometry.is_empty]
+    ground_records = [r for r in records if r.label == "ground" and not r.subtract and not r.geometry.is_empty]
+    other_records = [r for r in records if r.label != "ground" and not r.subtract and not r.geometry.is_empty]
+    subtract_records = [r for r in records if r.subtract and not r.geometry.is_empty]
+
+    draw_list: list[dict] = []
+    if ground_records:
+        merged_ground = union(*[r.geometry for r in ground_records])
+        if subtracts:
+            merged_ground = merged_ground.difference(union(*subtracts))
+        if not merged_ground.is_empty:
+            draw_list.append({"geometry": merged_ground, "label": "ground", "subtract": False})
+
+    for r in subtract_records:
+        draw_list.append(r.__dict__)
+
+    for r in other_records:
+        draw_list.append(r.__dict__)
+
+    draw_records(ax, draw_list, styles=styles, outline=True, chip_outline=outline)
     ax.set_aspect("equal", adjustable="box")
     ax.autoscale_view()
     unit_label = getattr(design, "units", "um")

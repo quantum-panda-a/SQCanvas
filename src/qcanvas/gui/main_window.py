@@ -40,7 +40,24 @@ class MainWindow(QMainWindow):
         self.setCentralWidget(self.canvas)
 
         self._build_side_panel()
+        if hasattr(self.design, "add_listener"):
+            self.design.add_listener(self._on_design_changed)
         self.refresh()
+
+    def _on_design_changed(self, _design: Any = None) -> None:
+        """Slot invoked when the underlying design changes."""
+        from PySide6.QtWidgets import QApplication
+
+        self.refresh()
+        app = QApplication.instance()
+        if app is not None:
+            app.processEvents()
+
+    def closeEvent(self, event) -> None:
+        """Clean up design listeners upon window closure."""
+        if hasattr(self.design, "remove_listener"):
+            self.design.remove_listener(self._on_design_changed)
+        super().closeEvent(event)
 
     # ------------------------------------------------------------------ panels
     def _build_side_panel(self) -> None:
@@ -106,7 +123,7 @@ class MainWindow(QMainWindow):
             layers=layers,
             chip_outline=self.chip_outline.isChecked(),
         )
-        self.canvas.draw_idle()
+        self.canvas.draw()
 
     def _export_gds(self) -> None:
         from PySide6.QtWidgets import QFileDialog

@@ -34,6 +34,8 @@ class Component:
         self.options = self._merge_options(options or {})
         self.design.register_component(self)
         self.make()
+        if hasattr(self.design, "notify_changed"):
+            self.design.notify_changed()
 
     # -------------------------------------------------------------- options
     def _merge_options(self, supplied: dict[str, Any]) -> AttrDict:
@@ -57,6 +59,8 @@ class Component:
         """Drop this component's shapes from the store, then regenerate them."""
         self.design.remove_shapes(component=self.name)
         self.make()
+        if hasattr(self.design, "notify_changed"):
+            self.design.notify_changed()
 
     def add_shape(
         self,
