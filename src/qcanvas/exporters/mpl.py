@@ -32,6 +32,7 @@ class MatplotlibExporter(Exporter):
         components: Iterable[str] | None = None,
         layers: Iterable[int] | None = None,
         chip_outline: bool = True,
+        grid: bool = True,
         title: str | None = None,
     ) -> Figure:
         return export_scene(
@@ -41,6 +42,7 @@ class MatplotlibExporter(Exporter):
             components=components,
             layers=layers,
             chip_outline=chip_outline,
+            grid=grid,
             title=title,
         )
 
@@ -53,11 +55,12 @@ def export_scene(
     components: Iterable[str] | None = None,
     layers: Iterable[int] | None = None,
     chip_outline: bool = True,
+    grid: bool = True,
     title: str | None = None,
 ) -> Figure:
     """Build a matplotlib scene for ``design`` and return its figure."""
     if ax is None:
-        fig, ax = plt.subplots(figsize=figsize)
+        fig, ax = plt.subplots(figsize=figsize, layout="constrained")
     else:
         fig = ax.get_figure()
         ax.clear()
@@ -103,14 +106,21 @@ def export_scene(
         draw_list.append(r.__dict__)
 
     draw_records(ax, draw_list, styles=styles, outline=True, chip_outline=outline)
-    ax.set_aspect("equal", adjustable="box")
+    ax.set_aspect("equal", adjustable="datalim")
+    ax.set_anchor("C")
     ax.autoscale_view()
     unit_label = getattr(design, "units", "um")
-    ax.set_xlabel(f"x [{unit_label}]")
-    ax.set_ylabel(f"y [{unit_label}]")
-    if title:
-        ax.set_title(title)
+    ax.set_xlabel(f"x [{unit_label}]", labelpad=6)
+    ax.set_ylabel(f"y [{unit_label}]", labelpad=6)
+    if grid:
+        ax.grid(True, color="#dcdcdc", linestyle="--", linewidth=0.6, alpha=0.75)
+        ax.set_axisbelow(True)
     else:
-        ax.set_title(f"{design.name} — {len(records)} shapes")
-    fig.tight_layout()
+        ax.grid(False)
+    if title:
+        ax.set_title(title, pad=10)
+    else:
+        ax.set_title(f"{design.name} — {len(records)} shapes", pad=10)
+    if fig.get_layout_engine() is None:
+        fig.tight_layout()
     return fig

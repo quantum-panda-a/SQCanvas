@@ -16,6 +16,7 @@ def view(
     components: Iterable[str] | None = None,
     layers: Iterable[int] | None = None,
     chip_outline: bool = True,
+    grid: bool = True,
     title: str | None = None,
 ) -> Figure:
     """Export ``design`` to a matplotlib figure.
@@ -30,5 +31,6 @@ def view(
         components=components,
         layers=layers,
         chip_outline=chip_outline,
+        grid=grid,
         title=title,
     )

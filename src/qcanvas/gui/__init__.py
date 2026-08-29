@@ -44,9 +44,15 @@ def launch(design=None) -> MainWindow:
     loop so cell execution continues immediately while the GUI stays open as a live dashboard.
     """
     _enable_ipython_gui()
+    from pathlib import Path
+    from PySide6.QtGui import QIcon
     from PySide6.QtWidgets import QApplication
 
-    QApplication.instance() or QApplication([])
+    app = QApplication.instance() or QApplication([])
+    icon_path = Path(__file__).parent / "resources" / "icon.png"
+    if icon_path.exists():
+        app.setWindowIcon(QIcon(str(icon_path)))
+
     window = MainWindow(design=design)
     window.show()
     return window
@@ -60,9 +66,15 @@ def run(design=None) -> None:
     In standard standalone Python scripts, it blocks until the window is closed.
     """
     _enable_ipython_gui()
+    from pathlib import Path
+    from PySide6.QtGui import QIcon
     from PySide6.QtWidgets import QApplication
 
     app = QApplication.instance() or QApplication([])
+    icon_path = Path(__file__).parent / "resources" / "icon.png"
+    if icon_path.exists():
+        app.setWindowIcon(QIcon(str(icon_path)))
+
     window = MainWindow(design=design)
     window.show()
 

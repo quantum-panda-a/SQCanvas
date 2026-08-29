@@ -53,7 +53,8 @@ def draw_records(
         _plot_geom(ax, geom, facecolor=facecolor, edgecolor=edgecolor, lw=0.4)
 
     if outline:
-        ax.set_aspect("equal", adjustable="box")
+        ax.set_aspect("equal", adjustable="datalim")
+        ax.set_anchor("C")
     if chip_outline:
         xs = [p[0] for p in chip_outline]
         ys = [p[1] for p in chip_outline]
