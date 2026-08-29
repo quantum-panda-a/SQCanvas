@@ -18,12 +18,28 @@ from shapely.geometry.base import BaseGeometry
 from qcanvas.utility.geom_utils import get_poly_pts
 
 
-def rectangle(w: float, h: float, xoff: float = 0.0, yoff: float = 0.0) -> Polygon:
-    """Create an axis-aligned rectangle of width ``w`` and height ``h``.
+def rectangle(
+    w: float,
+    h: float,
+    xoff: float = 0.0,
+    yoff: float = 0.0,
+    fillet: float = 0.0,
+    quad_segs: int = 32,
+) -> Polygon:
+    """Create an axis-aligned rectangle of width ``w`` and height ``h`` with optional corner fillet.
 
-    ``(xoff, yoff)`` is the rectangle centre. Returns a shapely ``Polygon``.
+    ``(xoff, yoff)`` is the rectangle centre.
+    ``fillet`` is the corner rounding radius.
+    ``quad_segs`` is the number of segments per quarter circle (default 32).
+    Returns a shapely ``Polygon``.
     """
-    poly = shapely.geometry.box(-w / 2.0, -h / 2.0, w / 2.0, h / 2.0)
+    if fillet <= 0.0:
+        poly = shapely.geometry.box(-w / 2.0, -h / 2.0, w / 2.0, h / 2.0)
+    else:
+        r = min(float(fillet), w / 2.0, h / 2.0)
+        inner = shapely.geometry.box(-w / 2.0 + r, -h / 2.0 + r, w / 2.0 - r, h / 2.0 - r)
+        poly = inner.buffer(r, join_style=1, quad_segs=quad_segs)
+
     if xoff == 0.0 and yoff == 0.0:
         return poly
     return shapely.affinity.translate(poly, xoff=xoff, yoff=yoff)

@@ -6,7 +6,7 @@ import pytest
 from matplotlib.figure import Figure
 from shapely.geometry import LineString, MultiPolygon, Polygon
 
-from qcanvas.components.transmon import TransmonPocket
+from qcanvas.components.transmon import DualPadTransmon
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.exporters.base import Exporter
 from qcanvas.exporters.gds import GdsExporter, export_gds
@@ -28,8 +28,8 @@ def test_exporter_registry():
 
 def test_matplotlib_exporter():
     design = PlanarDesign()
-    TransmonPocket(design, "Q1", options={"pos_x": "-1mm"})
-    TransmonPocket(design, "Q2", options={"pos_x": "1mm"})
+    DualPadTransmon(design, "Q1", options={"pos_x": "-1mm"})
+    DualPadTransmon(design, "Q2", options={"pos_x": "1mm"})
 
     fig = design.export("mpl")
     assert isinstance(fig, Figure)
@@ -49,7 +49,7 @@ def test_matplotlib_exporter():
 
 def test_gds_exporter_positive_and_ground_plane():
     design = PlanarDesign()
-    TransmonPocket(design, "Q1", options={"pos_x": "0mm", "pos_y": "0mm"})
+    DualPadTransmon(design, "Q1", options={"pos_x": "0mm", "pos_y": "0mm"})
 
     # Add multipolygon and linestring with width
     p1 = Polygon([(0, 0), (100, 0), (100, 100), (0, 100)])
@@ -84,8 +84,8 @@ def test_gds_exporter_positive_and_ground_plane():
 
 def test_overlapping_ground_guards():
     design = PlanarDesign()
-    TransmonPocket(design, "Q1", options={"pos_x": "-400um", "pos_y": "0um", "ground_guard": "100um"})
-    TransmonPocket(
+    DualPadTransmon(design, "Q1", options={"pos_x": "-400um", "pos_y": "0um", "ground_guard": "100um"})
+    DualPadTransmon(
         design,
         "Q2",
         options={

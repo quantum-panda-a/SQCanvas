@@ -2,7 +2,7 @@ import pytest
 from shapely.geometry import Polygon
 
 from qcanvas.components.base import Component
-from qcanvas.components.transmon import TransmonPocket
+from qcanvas.components.transmon import DualPadTransmon
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.utility.attr_dict import AttrDict
 
@@ -35,9 +35,9 @@ def test_component_base():
     assert len(design.shapes.by_component("D1")) == 1
 
 
-def test_transmon_pocket():
+def test_dual_pad_transmon():
     design = PlanarDesign()
-    TransmonPocket(
+    DualPadTransmon(
         design,
         "Q1",
         options={
@@ -46,22 +46,24 @@ def test_transmon_pocket():
             "pad_width": "450um",
             "pad_height": "100um",
             "pad_gap": "30um",
-            "pocket_width": "700um",
-            "pocket_height": "700um",
+            "gap_top": "50um",
+            "gap_down": "50um",
+            "gap_left": "50um",
+            "gap_right": "50um",
             "ground_guard": "15um",
         },
     )
 
     records = design.shapes.by_component("Q1")
-    # ground, pocket, top metal, bottom metal, junction bridge
+    # ground, cutout, top metal, bottom metal, junction bridge
     assert len(records) == 5
 
     ground_rec = next(r for r in records if r.label == "ground")
     assert ground_rec.subtract is False
     assert not ground_rec.geometry.is_empty
 
-    pocket_rec = next(r for r in records if r.label == "pocket")
-    assert pocket_rec.subtract is True
+    cutout_rec = next(r for r in records if r.label == "cutout")
+    assert cutout_rec.subtract is True
 
     metal_recs = [r for r in records if r.label == "metal"]
     assert len(metal_recs) == 2  # 2 islands
@@ -70,15 +72,101 @@ def test_transmon_pocket():
     assert junc_rec.subtract is False
 
     # Test without ground guard (ground_guard=0)
-    TransmonPocket(design, "Q2", options={"ground_guard": "0um"})
+    DualPadTransmon(design, "Q2", options={"ground_guard": "0um"})
     records_q2 = design.shapes.by_component("Q2")
-    assert len(records_q2) == 4  # pocket, 2 metal islands, junction
+    assert len(records_q2) == 4  # cutout, 2 metal islands, junction
     assert not any(r.label == "ground" for r in records_q2)
 
 
-def test_transmon_pocket_rotation():
+def test_dual_pad_transmon_defaults():
     design = PlanarDesign()
-    TransmonPocket(
+    assert DualPadTransmon.default_options.ground_guard == "30um"
+    assert DualPadTransmon.default_options.gap_top == "35um"
+    assert DualPadTransmon.default_options.gap_down == "35um"
+    assert DualPadTransmon.default_options.gap_left == "35um"
+    assert DualPadTransmon.default_options.gap_right == "35um"
+    assert DualPadTransmon.default_options.pad_fillet == "0um"
+    assert DualPadTransmon.default_options.cutout_fillet == "0um"
+
+    q = DualPadTransmon(design, "Q_default")
+    assert q.options.ground_guard == 30.0
+    assert q.options.gap_top == 35.0
+    assert q.options.gap_down == 35.0
+    assert q.options.gap_left == 35.0
+    assert q.options.gap_right == 35.0
+    assert q.options.pad_fillet == 0.0
+    assert q.options.cutout_fillet == 0.0
+
+    records = design.shapes.by_component("Q_default")
+    cutout_rec = next(r for r in records if r.label == "cutout")
+    # pad_w=455, pad_h=90, pad_gap=30
+    # cutout_w = 455 + 35 + 35 = 525
+    # cutout_h = 2*90 + 30 + 35 + 35 = 280
+    assert cutout_rec.geometry.bounds == pytest.approx((-262.5, -140.0, 262.5, 140.0))
+
+    ground_rec = next(r for r in records if r.label == "ground")
+    # ground_outer = cutout + 2*30um guard
+    assert ground_rec.geometry.bounds == pytest.approx((-292.5, -170.0, 292.5, 170.0))
+
+
+def test_dual_pad_transmon_asymmetric_gaps():
+    design = PlanarDesign()
+    DualPadTransmon(
+        design,
+        "Q_asym",
+        options={
+            "pad_width": "400um",
+            "pad_height": "100um",
+            "pad_gap": "20um",
+            "gap_top": "40um",
+            "gap_down": "20um",
+            "gap_left": "10um",
+            "gap_right": "50um",
+            "ground_guard": "30um",
+        },
+    )
+    records = design.shapes.by_component("Q_asym")
+    cutout_rec = next(r for r in records if r.label == "cutout")
+    # pad_w=400 -> x in [-200, 200]
+    # xmin = -200 - 10 = -210, xmax = 200 + 50 = 250
+    # top_pad y in [10, 110] -> ymax = 110 + 40 = 150
+    # bot_pad y in [-110, -10] -> ymin = -110 - 20 = -130
+    assert cutout_rec.geometry.bounds == pytest.approx((-210.0, -130.0, 250.0, 150.0))
+
+
+def test_dual_pad_transmon_fillets():
+    design = PlanarDesign()
+    DualPadTransmon(
+        design,
+        "Q_fillet",
+        options={
+            "pad_fillet": "10um",
+            "cutout_fillet": "15um",
+            "ground_guard": "30um",
+        },
+    )
+    records = design.shapes.by_component("Q_fillet")
+    cutout_rec = next(r for r in records if r.label == "cutout")
+    metal_recs = [r for r in records if r.label == "metal"]
+    ground_rec = next(r for r in records if r.label == "ground")
+
+    # Pads should have rounded corners (more than 5 exterior vertices)
+    for m in metal_recs:
+        assert len(m.geometry.exterior.coords) > 5
+        assert m.geometry.is_valid
+
+    # Cutout should have rounded corners
+    assert len(cutout_rec.geometry.exterior.coords) > 5
+    assert cutout_rec.geometry.is_valid
+
+    # Ground ring should subtract rounded cutout cleanly
+    assert ground_rec.geometry.is_valid
+    assert not ground_rec.geometry.is_empty
+
+
+def test_dual_pad_transmon_rotation():
+    design = PlanarDesign()
+    DualPadTransmon(
         design,
         "Q_rot",
         options={

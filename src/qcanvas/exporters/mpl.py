@@ -106,7 +106,7 @@ def export_scene(
         draw_list.append(r.__dict__)
 
     draw_records(ax, draw_list, styles=styles, outline=True, chip_outline=outline)
-    ax.set_aspect("equal", adjustable="datalim")
+    ax.set_aspect("equal", adjustable="box")
     ax.set_anchor("C")
     ax.autoscale_view()
     unit_label = getattr(design, "units", "um")

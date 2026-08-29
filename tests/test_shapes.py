@@ -33,7 +33,7 @@ def test_shape_store():
     helper_poly = Polygon([(10, 10), (12, 10), (12, 12), (10, 12)])
 
     r1 = ShapeRecord("Q1", "metal", p1, layer=1)
-    r2 = ShapeRecord("Q2", "pocket", p2, layer=2, subtract=True)
+    r2 = ShapeRecord("Q2", "cutout", p2, layer=2, subtract=True)
     r3 = ShapeRecord("Q1", "refpoint", helper_poly, layer=1, helper=True)
 
     store.add(r1)

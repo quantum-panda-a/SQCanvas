@@ -1,7 +1,7 @@
 import pytest
 from shapely.geometry import Point
 
-from qcanvas.components.transmon import TransmonPocket
+from qcanvas.components.transmon import DualPadTransmon
 from qcanvas.designs.design_base import Design
 from qcanvas.designs.design_planar import PlanarDesign
 
@@ -17,13 +17,13 @@ def test_design_base():
     assert len(design.shapes) == 1
 
     # Component registration
-    t1 = TransmonPocket(design, "Q1")
+    t1 = DualPadTransmon(design, "Q1")
     assert "Q1" in design.components
     assert design.get_components() == [t1]
 
     # Duplicate component name without overwrite raises ValueError
     with pytest.raises(ValueError):
-        TransmonPocket(design, "Q1")
+        DualPadTransmon(design, "Q1")
 
     # Rebuild single component and full design
     design.rebuild_component("Q1")
@@ -44,8 +44,8 @@ def test_design_base():
 
 def test_design_overwrite():
     design = Design(overwrite_enabled=True)
-    TransmonPocket(design, "Q1")
-    TransmonPocket(design, "Q1")
+    DualPadTransmon(design, "Q1")
+    DualPadTransmon(design, "Q1")
     assert "Q1" in design.components
 
 
@@ -76,15 +76,15 @@ def test_design_listeners():
         events.append(len(d.components))
 
     design.add_listener(callback)
-    TransmonPocket(design, "Q1")
+    DualPadTransmon(design, "Q1")
     assert events == [1]
 
-    TransmonPocket(design, "Q2")
+    DualPadTransmon(design, "Q2")
     assert events == [1, 2]
 
     design.remove_component("Q1")
     assert events == [1, 2, 1]
 
     design.remove_listener(callback)
-    TransmonPocket(design, "Q3")
+    DualPadTransmon(design, "Q3")
     assert events == [1, 2, 1]

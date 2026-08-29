@@ -33,6 +33,8 @@ class GdsExporter(Exporter):
         ground_plane: bool = False,
         ground_layer: int = 1,
         ground_datatype: int = 0,
+        unit: float = 1.0e-6,
+        precision: float = 1.0e-9,
     ) -> str:
         return export_gds(
             design,
@@ -40,6 +42,8 @@ class GdsExporter(Exporter):
             ground_plane=ground_plane,
             ground_layer=ground_layer,
             ground_datatype=ground_datatype,
+            unit=unit,
+            precision=precision,
         )
 
 
@@ -50,12 +54,24 @@ def export_gds(
     ground_plane: bool = False,
     ground_layer: int = 1,
     ground_datatype: int = 0,
+    unit: float = 1.0e-6,
+    precision: float = 1.0e-9,
 ) -> str:
-    """Serialize ``design`` to a GDSII file and return the resolved path."""
+    """Serialize ``design`` to a GDSII file and return the resolved path.
+
+    Parameters:
+        design: Design instance to export.
+        filepath: Output GDSII file path.
+        ground_plane: If True, generate continuous chip ground plane with holes carved out.
+        ground_layer: GDS layer index for ground metal (default 1).
+        ground_datatype: GDS datatype index for ground metal (default 0).
+        unit: User unit in meters (default 1.0e-6, i.e. 1 um).
+        precision: Database unit (DBU) in meters (default 1.0e-9, i.e. 1 nm resolution).
+    """
     filepath = Path(filepath)
     filepath.parent.mkdir(parents=True, exist_ok=True)
 
-    library = gdstk.Library(unit=1.0e-6, precision=1.0e-6)
+    library = gdstk.Library(unit=unit, precision=precision)
     top = library.new_cell(design.name or "TOP")
     records = design.shapes.as_records()
 

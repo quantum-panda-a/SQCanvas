@@ -38,7 +38,7 @@
 
 ```mermaid
 graph TD
-    A["PlanarDesign / Design (Design Container)"] --> B["Component: TransmonPocket... (Component Library)"]
+    A["PlanarDesign / Design (Design Container)"] --> B["Component: DualPadTransmon... (Component Library)"]
     B -- "make() generates shapes" --> C["ShapeStore (Geometry Data Center)"]
     
     C -- "Reads geometric records" --> D["Exporters (Export System)"]
@@ -80,14 +80,15 @@ pip install -e .
 
 ```python
 import qcanvas
-from qcanvas.components import TransmonPocket
+from qcanvas.components import DualPadTransmon
 from qcanvas.designs import PlanarDesign
+from qcanvas.exporters import export_gds
 
 # 1. Create a single-chip planar design container (Planar Die)
 design = PlanarDesign()
 
 # 2. Instantiate a Transmon qubit and configure geometry parameters
-q1 = TransmonPocket(
+q1 = DualPadTransmon(
     design,
     name="Q1",
     options={
@@ -96,20 +97,18 @@ q1 = TransmonPocket(
         "pad_width": "450um",
         "pad_height": "90um",
         "pad_gap": "30um",
-        "pocket_width": "650um",
-        "pocket_height": "650um",
-        "connection_pads": {
-            "readout": {
-                "pad_width": "120um",
-                "pad_height": "30um",
-                "pad_gap": "15um"
-            }
-        },
+        "gap_top": "35um",
+        "gap_down": "35um",
+        "gap_left": "35um",
+        "gap_right": "35um",
+        "pad_fillet": "5um",
+        "cutout_fillet": "10um",
+        "ground_guard": "30um",
     },
 )
 
 # 3. Add a second qubit
-q2 = TransmonPocket(
+q2 = DualPadTransmon(
     design,
     name="Q2",
     options={
@@ -124,35 +123,21 @@ fig = qcanvas.view(design, title="2-Qubit Planar Layout")
 fig.savefig("my_quantum_chip.png", dpi=300)
 
 # 5. Export fabrication-ready GDSII file (with automatic ground plane subtraction)
-gds_file = design.export(
-    "gds",
-    filepath="my_quantum_chip.gds",
-    ground_plane=True,
-    ground_layer=1,
-)
-print(f"GDSII layout generated: {gds_file}")
+export_gds(design, filepath="my_quantum_chip.gds", ground_plane=True)
 ```
 
 ---
 
-### 3. Launch Desktop Viewer (Desktop GUI)
+### 3. Interactive Desktop GUI
 
-You can launch the built-in interactive layout viewer directly via the command line:
+Launch the desktop viewer to inspect designs with pan, zoom, and live component updates:
 
 ```bash
-# Launch built-in interactive GUI viewer
+# Launch with the built-in demo layout
 uv run python -m qcanvas.gui
-```
 
-Or launch it from a Python script or Jupyter Notebook as a live dashboard:
-
-```python
-# Option 1: Jupyter Notebook live dashboard mode (non-blocking, allows subsequent cells to update dynamically)
-gui = design.open_gui()  # or qcanvas.gui.launch(design)
-
-# Option 2: Standard standalone script mode (blocks main thread to keep window open)
-import qcanvas.gui
-qcanvas.gui.run(design)
+# Or pass a custom design file
+uv run python -m qcanvas.gui path/to/my_design.py
 ```
 
 ---
@@ -165,7 +150,7 @@ src/qcanvas/
 ├── config.py             # Chip dimensions, units, and global style configurations
 ├── components/           # Parametric component library
 │   ├── base.py           # Component abstract base class
-│   └── transmon.py       # TransmonPocket electrode and junction component
+│   └── transmon.py       # DualPadTransmon electrode and junction component
 ├── designs/              # Layout assembly and design containers
 │   ├── design_base.py    # Design top-level base class (manages components, shapes, and exporters)
 │   └── design_planar.py  # PlanarDesign single-chip CPW layout

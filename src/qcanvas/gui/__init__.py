@@ -2,7 +2,12 @@
 
 from __future__ import annotations
 
+import logging
 import matplotlib
+
+# Mute matplotlib's internal verbose loggers in interactive sessions
+logging.getLogger("matplotlib").setLevel(logging.WARNING)
+logging.getLogger("matplotlib.axes._base").setLevel(logging.WARNING)
 
 # Must be set before any matplotlib pyplot / backend import under Qt.
 matplotlib.use("QtAgg")

@@ -31,6 +31,6 @@ DISPLAY_STYLES = AttrDict(
     default=AttrDict(facecolor="0.15", edgecolor="0.0"),
     metal=AttrDict(facecolor="0.15", edgecolor="0.0"),
     junction=AttrDict(facecolor="#d62728", edgecolor="#8b0000"),
-    pocket=AttrDict(facecolor="none", edgecolor="0.5"),
+    cutout=AttrDict(facecolor="none", edgecolor="0.5"),
     ground=AttrDict(facecolor="0.25", edgecolor="0.1"),
 )

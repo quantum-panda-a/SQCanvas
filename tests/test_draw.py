@@ -28,6 +28,30 @@ def test_rectangle():
     assert is_rectangle(rect)
 
 
+def test_rectangle_fillet():
+    # Normal fillet
+    rect = rectangle(100.0, 50.0, fillet=10.0)
+    assert isinstance(rect, Polygon)
+    assert rect.is_valid
+    assert rect.bounds == pytest.approx((-50.0, -25.0, 50.0, 25.0))
+    # A filleted rectangle has rounded corners and thus area < w * h
+    assert rect.area < 100.0 * 50.0
+    assert not is_rectangle(rect)
+    assert len(rect.exterior.coords) > 5
+
+    # Clamped fillet (fillet > min(w, h)/2)
+    rect_clamped = rectangle(20.0, 20.0, fillet=50.0)
+    assert rect_clamped.is_valid
+    assert rect_clamped.bounds == pytest.approx((-10.0, -10.0, 10.0, 10.0))
+    # Should approximate a circle of radius 10
+    import math
+    assert rect_clamped.area == pytest.approx(math.pi * 100.0, rel=1e-2)
+
+    # Offset with fillet
+    rect_off = rectangle(40.0, 20.0, xoff=10.0, yoff=5.0, fillet=5.0)
+    assert rect_off.bounds == pytest.approx((-10.0, -5.0, 30.0, 15.0))
+
+
 def test_transforms():
     rect = rectangle(2.0, 2.0)
     moved = translate(rect, 3.0, 4.0)
@@ -108,7 +132,7 @@ def test_draw_mpl_records():
     records = [
         {"geometry": rect, "label": "metal", "subtract": False},
         {"geometry": hollow_poly, "label": "ground", "subtract": False},
-        {"geometry": rect, "label": "pocket", "subtract": True},
+        {"geometry": rect, "label": "cutout", "subtract": True},
         {"geometry": line, "label": "wire", "subtract": False},
         {"geometry": None},
     ]

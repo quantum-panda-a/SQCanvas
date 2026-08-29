@@ -3,7 +3,7 @@ import os
 import pytest
 from PySide6.QtWidgets import QApplication
 
-from qcanvas.components import TransmonPocket
+from qcanvas.components import DualPadTransmon
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.gui.canvas import MplCanvas
 from qcanvas.gui.main_window import MainWindow, _demo_design
@@ -59,7 +59,7 @@ def test_main_window_with_custom_and_demo_design(qapp):
     assert win.windowTitle() == "QCanvas Viewer"
     assert win.component_table.rowCount() == 2
     assert win.component_table.item(0, 0).text() == "Q1"
-    assert win.component_table.item(0, 1).text() == "TransmonPocket"
+    assert win.component_table.item(0, 1).text() == "DualPadTransmon"
     assert win.show_grid.isChecked() is True
     assert win.coord_label is not None
     assert win.hint_label is not None
@@ -78,13 +78,13 @@ def test_main_window_live_reactive_updates(qapp):
     assert win.component_table.rowCount() == 0
 
     # Add Q1 dynamically -> GUI should automatically refresh and show 1 item with Type
-    TransmonPocket(design, "Q1")
+    DualPadTransmon(design, "Q1")
     assert win.component_table.rowCount() == 1
     assert win.component_table.item(0, 0).text() == "Q1"
-    assert win.component_table.item(0, 1).text() == "TransmonPocket"
+    assert win.component_table.item(0, 1).text() == "DualPadTransmon"
 
     # Add Q2 dynamically -> GUI should automatically show 2 items
-    TransmonPocket(design, "Q2")
+    DualPadTransmon(design, "Q2")
     assert win.component_table.rowCount() == 2
 
     # Remove Q1 -> GUI should automatically show 1 item

@@ -439,10 +439,10 @@ class MainWindow(QMainWindow):
 
 def _demo_design():
     """Build a demo design so the window opens with content."""
-    from qcanvas.components import TransmonPocket
+    from qcanvas.components import DualPadTransmon
     from qcanvas.designs import PlanarDesign
 
     design = PlanarDesign()
-    TransmonPocket(design, "Q1", options={"pos_x": "-2000um", "pos_y": "0.0um"})
-    TransmonPocket(design, "Q2", options={"pos_x": "2000um", "pos_y": "500um"})
+    DualPadTransmon(design, "Q1", options={"pos_x": "-2000um", "pos_y": "0.0um"})
+    DualPadTransmon(design, "Q2", options={"pos_x": "2000um", "pos_y": "500um"})
     return design
