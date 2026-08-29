@@ -7,7 +7,18 @@ authors = [
     { name = "Xander Parker", email = "pandapeppa2026@gmail.com" }
 ]
 requires-python = ">=3.12"
-dependencies = []
+dependencies = [
+    "shapely>=2.0.0",
+    "numpy>=1.26.0",
+    "matplotlib>=3.8.0",
+    "gdstk>=0.9.0",
+    "PySide6>=6.6.0",
+]
+
+[project.optional-dependencies]
+notebook = [
+    "ipython>=8.0.0",
+]
 
 [build-system]
 requires = ["uv_build>=0.11.2,<0.12.0"]
