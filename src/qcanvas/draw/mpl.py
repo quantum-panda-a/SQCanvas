@@ -46,7 +46,8 @@ def draw_records(
         label = record.get("label", "")
         style = styles.get(label, {})
         if subtract:
-            _plot_geom(ax, geom, facecolor="none", edgecolor="0.45", lw=0.7, linestyle="--")
+            edgecolor = style.get("edgecolor", "0.45")
+            _plot_geom(ax, geom, facecolor="none", edgecolor=edgecolor, lw=0.7, linestyle="--")
             continue
         facecolor = style.get("facecolor", "0.15")
         edgecolor = style.get("edgecolor", "0.0")
@@ -58,7 +59,9 @@ def draw_records(
     if chip_outline:
         xs = [p[0] for p in chip_outline]
         ys = [p[1] for p in chip_outline]
-        ax.plot(xs, ys, color="0.35", lw=0.8, linestyle=":")
+        chip_style = styles.get("chip_outline", {})
+        chip_color = chip_style.get("edgecolor", "0.35")
+        ax.plot(xs, ys, color=chip_color, lw=0.8, linestyle=":")
 
 
 def _polygon_to_patch(poly: Polygon, **kwargs: object) -> PathPatch:

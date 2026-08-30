@@ -75,7 +75,7 @@ class Component:
         metadata: dict[str, Any] | None = None,
     ):
         """Register a shape on the parent design, tagged with this component's name."""
-        layer = int(self.options.layer) if layer is None else layer
+        layer = int(float(self.options.layer)) if layer is None else layer
         return self.design.add_shape(
             component=self.name,
             label=label,
@@ -109,7 +109,7 @@ class Component:
 
     @property
     def layer(self) -> int:
-        return int(self.options.layer)
+        return int(float(self.options.layer))
 
     def __repr__(self) -> str:
         return f"{type(self).__name__}(name={self.name!r})"

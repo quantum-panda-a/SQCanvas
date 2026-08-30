@@ -8,7 +8,7 @@ import matplotlib.pyplot as plt
 from matplotlib.axes import Axes
 from matplotlib.figure import Figure
 
-from qcanvas.config import DISPLAY_STYLES
+from qcanvas.config import get_theme
 from qcanvas.draw import union
 from qcanvas.draw.mpl import draw_records
 from qcanvas.exporters.base import Exporter
@@ -34,6 +34,8 @@ class MatplotlibExporter(Exporter):
         chip_outline: bool = True,
         grid: bool = True,
         title: str | None = None,
+        dark_mode: bool | None = None,
+        theme: str | None = None,
     ) -> Figure:
         return export_scene(
             design,
@@ -44,6 +46,8 @@ class MatplotlibExporter(Exporter):
             chip_outline=chip_outline,
             grid=grid,
             title=title,
+            dark_mode=dark_mode,
+            theme=theme,
         )
 
 
@@ -57,8 +61,10 @@ def export_scene(
     chip_outline: bool = True,
     grid: bool = True,
     title: str | None = None,
+    dark_mode: bool | None = None,
+    theme: str | None = None,
 ) -> Figure:
-    """Build a matplotlib scene for ``design`` and return its figure."""
+    """Build a matplotlib scene for ``design`` with preset theme support."""
     if ax is None:
         fig, ax = plt.subplots(figsize=figsize, layout="constrained")
     else:
@@ -73,7 +79,15 @@ def export_scene(
     if layers is not None:
         records = [r for r in records if r.layer in layers]
 
-    styles = {key: value.to_dict() if hasattr(value, "to_dict") else dict(value) for key, value in DISPLAY_STYLES.items()}
+    # Resolve theme
+    if theme is not None:
+        theme_cfg = get_theme(theme)
+    elif dark_mode is not None:
+        theme_cfg = get_theme("cyber" if dark_mode else "paper")
+    else:
+        theme_cfg = get_theme("paper")
+
+    styles = {key: value.to_dict() if hasattr(value, "to_dict") else dict(value) for key, value in theme_cfg.styles.items()}
     outline = None
     if chip_outline and hasattr(design, "main_chip"):
         cx, cy = design.chip_centre()
@@ -110,17 +124,29 @@ def export_scene(
     ax.set_anchor("C")
     ax.autoscale_view()
     unit_label = getattr(design, "units", "um")
+
+    # Apply Theme Aesthetics
+    fig.patch.set_facecolor(theme_cfg.canvas_bg)
+    ax.set_facecolor(theme_cfg.canvas_bg)
+    ax.tick_params(colors=theme_cfg.text_color, labelsize=9)
+    ax.xaxis.label.set_color(theme_cfg.text_color)
+    ax.yaxis.label.set_color(theme_cfg.text_color)
     ax.set_xlabel(f"x [{unit_label}]", labelpad=6)
     ax.set_ylabel(f"y [{unit_label}]", labelpad=6)
+
+    for spine in ax.spines.values():
+        spine.set_color(theme_cfg.axis_color)
+        spine.set_linewidth(1.0)
+
     if grid:
-        ax.grid(True, color="#dcdcdc", linestyle="--", linewidth=0.6, alpha=0.75)
+        ax.grid(True, color=theme_cfg.grid_color, linestyle="--", linewidth=0.8, alpha=0.85)
         ax.set_axisbelow(True)
     else:
         ax.grid(False)
-    if title:
-        ax.set_title(title, pad=10)
-    else:
-        ax.set_title(f"{design.name} — {len(records)} shapes", pad=10)
+
+    if title is not None:
+        ax.set_title(title, pad=10, color=theme_cfg.text_color)
+
     if fig.get_layout_engine() is None:
         fig.tight_layout()
     return fig

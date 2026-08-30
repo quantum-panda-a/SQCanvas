@@ -7,6 +7,7 @@ from matplotlib.figure import Figure
 from shapely.geometry import LineString, MultiPolygon, Polygon
 
 from qcanvas.components.transmon import DualPadTransmon
+from qcanvas.config import PRESET_THEMES
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.exporters.base import Exporter
 from qcanvas.exporters.gds import GdsExporter, export_gds
@@ -45,6 +46,18 @@ def test_matplotlib_exporter():
     )
     assert isinstance(fig2, Figure)
     plt.close(fig2)
+
+
+def test_matplotlib_exporter_preset_themes():
+    design = PlanarDesign()
+    DualPadTransmon(design, "Q1")
+
+    all_themes = ["cyber", "nordic", "aurora", "paper", "no002", "no005", "no008", "no009", "no013"]
+    for theme_key in all_themes:
+        fig = design.export("mpl", theme=theme_key, title=f"Theme: {theme_key}")
+        assert isinstance(fig, Figure)
+        assert fig.get_facecolor() is not None
+        plt.close(fig)
 
 
 def test_gds_exporter_positive_and_ground_plane():
