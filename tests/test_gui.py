@@ -214,12 +214,29 @@ def test_main_window_interaction_and_selection(qapp):
     miss = win._find_component_at(99999.0, 99999.0)
     assert miss is None
 
-    # Simulate canvas click on Q1
+    # Simulate canvas click on Q1 -> selects Q1
     win._on_canvas_click_point(-2000.0, 0.0)
     assert win._selected_component == "Q1"
 
+    # Simulate canvas click on Q1 again -> deselects Q1
+    win._on_canvas_click_point(-2000.0, 0.0)
+    assert win._selected_component is None
+
     # Simulate canvas click on empty space
     win._on_canvas_click_point(99999.0, 99999.0)
+    assert win._selected_component is None
+
+    # Test table click selection and toggle deselect
+    item_q1 = win.component_table.item(0, 0)
+    win.component_table.selectRow(0)
+    assert win._selected_component == "Q1"
+
+    # Reset _selection_just_changed as itemClicked would do
+    win._on_component_table_item_clicked(item_q1)
+    assert win._selected_component == "Q1"
+
+    # Click again on already selected table item -> deselects
+    win._on_component_table_item_clicked(item_q1)
     assert win._selected_component is None
 
     # Test search filter

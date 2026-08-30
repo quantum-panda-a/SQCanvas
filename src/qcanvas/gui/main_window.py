@@ -67,6 +67,7 @@ class MainWindow(QMainWindow):
             self.setWindowIcon(QIcon(str(icon_path)))
 
         self._selected_component: str | None = None
+        self._selection_just_changed: bool = False
 
         # Build Main Viewport & Floating HUD
         self._build_viewport()
@@ -296,6 +297,7 @@ class MainWindow(QMainWindow):
         self.component_table.verticalHeader().setVisible(False)
         self.component_table.setShowGrid(False)
         self.component_table.itemSelectionChanged.connect(self._on_component_table_selection_changed)
+        self.component_table.itemClicked.connect(self._on_component_table_item_clicked)
         self.component_table.itemDoubleClicked.connect(self._on_component_table_double_clicked)
         self.component_list = self.component_table  # Backwards compatibility
         layout.addWidget(self.component_table, 1)
@@ -438,10 +440,13 @@ class MainWindow(QMainWindow):
 
     # ---------------------------------------------------------------- Pick & Selection
     def _on_canvas_click_point(self, x: float, y: float) -> None:
-        """Find and select component at canvas click point."""
+        """Find and select component at canvas click point. If already selected, deselect."""
         hit_name = self._find_component_at(x, y)
         if hit_name:
-            self.select_component(hit_name)
+            if self._selected_component == hit_name:
+                self.clear_selection()
+            else:
+                self.select_component(hit_name)
         else:
             self.clear_selection()
 
@@ -523,7 +528,16 @@ class MainWindow(QMainWindow):
             item = self.component_table.item(row, 0)
             if item:
                 self.select_component(item.text())
+                self._selection_just_changed = True
         else:
+            self.clear_selection()
+            self._selection_just_changed = True
+
+    def _on_component_table_item_clicked(self, item) -> None:
+        if self._selection_just_changed:
+            self._selection_just_changed = False
+        else:
+            # Clicked on already selected item -> deselect
             self.clear_selection()
 
     def _on_component_table_double_clicked(self, item) -> None:

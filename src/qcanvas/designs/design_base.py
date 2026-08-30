@@ -76,8 +76,10 @@ class Design:
     def register_component(self, component: Component) -> None:
         """Record a newly built component on this design."""
         name = component.name
-        if name in self.components and not self.overwrite_enabled:
-            raise ValueError(f"Component '{name}' already exists on design '{self.name}'.")
+        if name in self.components:
+            if not self.overwrite_enabled:
+                raise ValueError(f"Component '{name}' already exists on design '{self.name}'.")
+            self.remove_shapes(component=name)
         self.components[name] = component
 
     def remove_component(self, name: str) -> None:

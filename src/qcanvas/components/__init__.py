@@ -1,6 +1,7 @@
 """Drawable, parameterized components."""
 
 from qcanvas.components.base import Component
-from qcanvas.components.transmon import DualPadTransmon
+from qcanvas.components.transmon import CrossTransmon, DualPadTransmon, SinglePadTransmon
 
-__all__ = ["Component", "DualPadTransmon"]
+__all__ = ["Component", "CrossTransmon", "DualPadTransmon", "SinglePadTransmon"]
+

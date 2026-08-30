@@ -21,7 +21,9 @@ logging.getLogger("matplotlib.axes._base").setLevel(logging.WARNING)
 from qcanvas import components, designs, draw, exporters, shapes, utility
 from qcanvas.components import (
     Component,
+    CrossTransmon,
     DualPadTransmon,
+    SinglePadTransmon,
 )
 from qcanvas.designs import Design, PlanarDesign
 from qcanvas.exporters import Exporter, GdsExporter, MatplotlibExporter
@@ -31,12 +33,14 @@ __version__ = "0.1.0"
 
 __all__ = [
     "Component",
+    "CrossTransmon",
     "Design",
     "DualPadTransmon",
     "Exporter",
     "GdsExporter",
     "MatplotlibExporter",
     "PlanarDesign",
+    "SinglePadTransmon",
     "components",
     "designs",
     "display",

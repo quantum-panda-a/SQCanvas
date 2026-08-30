@@ -47,6 +47,7 @@ def test_design_overwrite():
     DualPadTransmon(design, "Q1")
     DualPadTransmon(design, "Q1")
     assert "Q1" in design.components
+    assert len(design.shapes.by_component("Q1")) == 5
 
 
 def test_design_exporter_lookup():
