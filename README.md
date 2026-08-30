@@ -150,7 +150,7 @@ src/qcanvas/
 ├── config.py             # Chip dimensions, units, and global style configurations
 ├── components/           # Parametric component library
 │   ├── base.py           # Component abstract base class
-│   └── transmon.py       # DualPadTransmon electrode and junction component
+│   └── qubits.py         # DualPadTransmon, SinglePadTransmon, CrossTransmon qubits
 ├── designs/              # Layout assembly and design containers
 │   ├── design_base.py    # Design top-level base class (manages components, shapes, and exporters)
 │   └── design_planar.py  # PlanarDesign single-chip CPW layout

@@ -1,7 +1,7 @@
 import pytest
 from shapely.geometry import Point
 
-from qcanvas.components.transmon import DualPadTransmon
+from qcanvas.components.qubits import DualPadTransmon
 from qcanvas.designs.design_base import Design
 from qcanvas.designs.design_planar import PlanarDesign
 

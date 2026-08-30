@@ -6,7 +6,7 @@ import pytest
 from matplotlib.figure import Figure
 from shapely.geometry import LineString, MultiPolygon, Polygon
 
-from qcanvas.components.transmon import DualPadTransmon
+from qcanvas.components.qubits import DualPadTransmon
 from qcanvas.config import PRESET_THEMES
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.exporters.base import Exporter

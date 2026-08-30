@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
 import qcanvas
-from qcanvas.components.transmon import DualPadTransmon
+from qcanvas.components.qubits import DualPadTransmon
 from qcanvas.designs.design_planar import PlanarDesign
 from qcanvas.viewer import display, view
 

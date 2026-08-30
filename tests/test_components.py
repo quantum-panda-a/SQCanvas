@@ -2,7 +2,7 @@ import pytest
 from shapely.geometry import Polygon
 
 from qcanvas.components.base import Component
-from qcanvas.components.transmon import CrossTransmon, DualPadTransmon, SinglePadTransmon
+from qcanvas.components.qubits import CrossTransmon, DualPadTransmon, SinglePadTransmon
 from qcanvas.designs.design_planar import PlanarDesign
 
 from qcanvas.utility.attr_dict import AttrDict
