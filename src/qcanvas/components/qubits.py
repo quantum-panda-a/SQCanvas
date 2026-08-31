@@ -111,8 +111,8 @@ class SinglePadTransmon(Component):
     """
 
     default_options = AttrDict(
-        pad_width="650um",
-        pad_height="120um",
+        pad_width="455um",
+        pad_height="90um",
         inductor_width="20um",
         gap_top="35um",
         gap_down="35um",
@@ -187,9 +187,9 @@ class CrossTransmon(Component):
     """
 
     default_options = AttrDict(
-        cross_width="30um",
+        cross_width="20um",
         cross_length="200um",
-        cross_gap="35um",
+        cross_gap="20um",
         inductor_width="20um",
         cross_fillet="0um",
         cutout_fillet="0um",
@@ -237,5 +237,56 @@ class CrossTransmon(Component):
         bridge_y = -cross_l - cross_gap / 2.0
         bridge = rectangle(inductor_w, cross_gap, 0.0, bridge_y)
         self.add_shape("junction", self.place(bridge))
+
+
+class CircularTransmon(Component):
+    """A circular (concentric) transmon component.
+
+    A circular metal charge island is enclosed in a circular ground plane cutout,
+    with the geometric center at the circle center (0, 0). A Josephson junction
+    bridges the bottom gap between the circular pad and the ground plane.
+
+    Options:
+        pad_radius: Radius of the central circular metal pad.
+        gap: Gap distance between the circular pad and the surrounding ground plane cutout.
+        inductor_width: Width of the junction bridge in the bottom gap.
+        ground_guard: Surrounding ground plane margin.
+    """
+
+    default_options = AttrDict(
+        pad_radius="150um",
+        gap="35um",
+        inductor_width="20um",
+        ground_guard="30um",
+    )
+
+    def make(self) -> None:
+        from qcanvas.draw import circle
+
+        pad_r = parse_dimension(self.options.pad_radius)
+        gap = parse_dimension(self.options.gap)
+        inductor_w = parse_dimension(self.options.inductor_width)
+        guard = parse_dimension(self.options.get("ground_guard", 0.0))
+
+        cutout_r = pad_r + gap
+
+        # Center circular metal island at (0, 0)
+        pad = circle(pad_r, 0.0, 0.0)
+        # Circular cutout at (0, 0)
+        cutout = circle(cutout_r, 0.0, 0.0)
+
+        if guard > 0.0:
+            ground_outer = circle(cutout_r + guard, 0.0, 0.0)
+            ground_ring = subtract(ground_outer, cutout)
+            self.add_shape("ground", self.place(ground_ring))
+
+        self.add_shape("cutout", self.place(cutout), subtract=True)
+        self.add_shape("metal", self.place(pad))
+
+        # Junction bridge in the bottom gap (south, y < 0)
+        bridge_y = -pad_r - gap / 2.0
+        bridge = rectangle(inductor_w, gap, 0.0, bridge_y)
+        self.add_shape("junction", self.place(bridge))
+
 
 

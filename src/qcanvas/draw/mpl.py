@@ -43,12 +43,10 @@ def draw_records(
         if geom is None or geom.is_empty:
             continue
         subtract = bool(record.get("subtract", False))
+        if subtract:
+            continue
         label = record.get("label", "")
         style = styles.get(label, {})
-        if subtract:
-            edgecolor = style.get("edgecolor", "0.45")
-            _plot_geom(ax, geom, facecolor="none", edgecolor=edgecolor, lw=0.7, linestyle="--")
-            continue
         facecolor = style.get("facecolor", "0.15")
         edgecolor = style.get("edgecolor", "0.0")
         _plot_geom(ax, geom, facecolor=facecolor, edgecolor=edgecolor, lw=0.4)

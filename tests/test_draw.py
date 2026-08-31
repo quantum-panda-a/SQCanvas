@@ -4,7 +4,9 @@ from shapely.geometry import LineString, Point, Polygon
 
 from qcanvas.draw.basic import (
     _iter_func_geom_,
+    arc,
     buffer,
+    circle,
     flip_merge,
     is_rectangle,
     rectangle,
@@ -15,6 +17,14 @@ from qcanvas.draw.basic import (
     union,
 )
 from qcanvas.draw.mpl import draw_records, figure_spawn
+
+
+def test_circle():
+    c = circle(10.0, 5.0, 5.0)
+    assert isinstance(c, Polygon)
+    assert c.is_valid
+    assert c.centroid.x == pytest.approx(5.0)
+    assert c.centroid.y == pytest.approx(5.0)
 
 
 def test_rectangle():
@@ -50,6 +60,23 @@ def test_rectangle_fillet():
     # Offset with fillet
     rect_off = rectangle(40.0, 20.0, xoff=10.0, yoff=5.0, fillet=5.0)
     assert rect_off.bounds == pytest.approx((-10.0, -5.0, 30.0, 15.0))
+
+
+def test_arc_and_fillet():
+    # Plain arc
+    a0 = arc(100.0, 20.0, 0.0, 90.0)
+    assert isinstance(a0, Polygon)
+    assert a0.is_valid
+
+    # Filleted arc
+    a_fillet = arc(100.0, 20.0, 0.0, 90.0, fillet=4.0)
+    assert isinstance(a_fillet, Polygon)
+    assert a_fillet.is_valid
+    assert a_fillet.area < a0.area
+
+    # Semicircular round cap
+    a_round = arc(100.0, 20.0, 0.0, 90.0, fillet=10.0)
+    assert a_round.is_valid
 
 
 def test_transforms():

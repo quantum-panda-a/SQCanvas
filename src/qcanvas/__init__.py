@@ -20,10 +20,21 @@ logging.getLogger("matplotlib.axes._base").setLevel(logging.WARNING)
 
 from qcanvas import components, designs, draw, exporters, shapes, utility
 from qcanvas.components import (
+    AlignmentMarker,
+    CPWOpen,
+    CPWShort,
+    ChargeArc,
+    ChargeClaw,
+    ChargeTee,
+    CircularTransmon,
     Component,
     CrossTransmon,
     DualPadTransmon,
+    Launchpad,
+    PackagingMarker,
+    ReadTee,
     SinglePadTransmon,
+    Text,
 )
 from qcanvas.designs import Design, PlanarDesign
 from qcanvas.exporters import Exporter, GdsExporter, MatplotlibExporter
@@ -32,15 +43,26 @@ from qcanvas.viewer import display, view
 __version__ = "0.1.0"
 
 __all__ = [
+    "AlignmentMarker",
+    "CPWOpen",
+    "CPWShort",
+    "ChargeArc",
+    "ChargeClaw",
+    "ChargeTee",
+    "CircularTransmon",
     "Component",
     "CrossTransmon",
     "Design",
     "DualPadTransmon",
     "Exporter",
     "GdsExporter",
+    "Launchpad",
     "MatplotlibExporter",
+    "PackagingMarker",
     "PlanarDesign",
+    "ReadTee",
     "SinglePadTransmon",
+    "Text",
     "components",
     "designs",
     "display",

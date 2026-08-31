@@ -7,7 +7,9 @@ from shapely.ops import unary_union
 from qcanvas.draw import basic, mpl
 from qcanvas.draw.basic import (
     _iter_func_geom_,
+    arc,
     buffer,
+    circle,
     flip_merge,
     is_rectangle,
     rectangle,
@@ -24,8 +26,10 @@ __all__ = [
     "Point",
     "Polygon",
     "_iter_func_geom_",
+    "arc",
     "basic",
     "buffer",
+    "circle",
     "flip_merge",
     "is_rectangle",
     "mpl",

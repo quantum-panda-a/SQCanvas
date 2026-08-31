@@ -103,7 +103,6 @@ def export_scene(
     subtracts = [r.geometry for r in records if r.subtract and not r.geometry.is_empty]
     ground_records = [r for r in records if r.label == "ground" and not r.subtract and not r.geometry.is_empty]
     other_records = [r for r in records if r.label != "ground" and not r.subtract and not r.geometry.is_empty]
-    subtract_records = [r for r in records if r.subtract and not r.geometry.is_empty]
 
     draw_list: list[dict] = []
     if ground_records:
@@ -112,9 +111,6 @@ def export_scene(
             merged_ground = merged_ground.difference(union(*subtracts))
         if not merged_ground.is_empty:
             draw_list.append({"geometry": merged_ground, "label": "ground", "subtract": False})
-
-    for r in subtract_records:
-        draw_list.append(r.__dict__)
 
     for r in other_records:
         draw_list.append(r.__dict__)
