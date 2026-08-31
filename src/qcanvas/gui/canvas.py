@@ -15,6 +15,7 @@ from PySide6.QtWidgets import QSizePolicy
 
 from qcanvas.config import get_theme
 from qcanvas.gui.interaction import CanvasInteraction
+from qcanvas.gui.placement import PlacementController
 from qcanvas.gui.ruler import CanvasRuler
 from qcanvas.gui.theme import Palette
 
@@ -94,6 +95,9 @@ class MplCanvas(FigureCanvas):
         # CAD Distance Ruler Tool
         self.ruler = CanvasRuler(self.figure, self.axes)
 
+        # CAD Interactive Component Placement Engine
+        self.placement = PlacementController(self.figure, self.axes)
+
     def set_theme(self, theme_name: str) -> None:
         """Switch active color palette theme and update canvas appearance."""
         theme_cfg = get_theme(theme_name)
@@ -116,9 +120,17 @@ class MplCanvas(FigureCanvas):
         on_autoscale=None,
         on_shortcut=None,
     ) -> None:
-        """Bind high-level UI callbacks to canvas interactions with ruler and crosshair integration."""
+        """Bind high-level UI callbacks to canvas interactions with ruler, placement, and crosshair integration."""
         def _wrapped_hover(x: float | None, y: float | None):
             self._update_crosshair(x, y)
+            if self.placement.is_active:
+                snapped = self.placement.handle_motion(x, y)
+                if on_hover:
+                    if snapped is not None:
+                        on_hover(snapped[0], snapped[1])
+                    else:
+                        on_hover(x, y)
+                return
             if self.ruler.active:
                 self.ruler.handle_motion(x, y)
             if on_hover:
@@ -139,7 +151,7 @@ class MplCanvas(FigureCanvas):
         self.interaction.on_shortcut = on_shortcut
 
     def refresh_interaction_axes(self) -> None:
-        """Inform interaction controller and ruler of new/cleared axes."""
+        """Inform interaction controller, ruler, and placement controller of new/cleared axes."""
         theme_cfg = get_theme(self.current_theme)
         self.axes.set_facecolor(theme_cfg.canvas_bg)
 
@@ -151,6 +163,7 @@ class MplCanvas(FigureCanvas):
 
         self.interaction.set_axes(self.axes)
         self.ruler.set_axes(self.axes)
+        self.placement.set_axes(self.axes)
         self.update_scale_bar()
 
     # ----------------------------------------------------------- CAD Crosshair Cursor

@@ -18,7 +18,12 @@ import logging
 logging.getLogger("matplotlib").setLevel(logging.WARNING)
 logging.getLogger("matplotlib.axes._base").setLevel(logging.WARNING)
 
-from qcanvas import components, designs, draw, exporters, shapes, utility
+from qcanvas.codegen import (
+    ScriptLoadError,
+    export_python_script,
+    generate_python_script,
+    load_design_from_script,
+)
 from qcanvas.components import (
     AlignmentMarker,
     CPWOpen,
@@ -39,6 +44,9 @@ from qcanvas.components import (
 from qcanvas.designs import Design, PlanarDesign
 from qcanvas.exporters import Exporter, GdsExporter, MatplotlibExporter
 from qcanvas.viewer import display, view
+
+to_python = generate_python_script
+load_script = load_design_from_script
 
 __version__ = "0.1.0"
 
@@ -63,12 +71,15 @@ __all__ = [
     "ReadTee",
     "SinglePadTransmon",
     "Text",
-    "components",
-    "designs",
     "display",
     "draw",
+    "export_python_script",
     "exporters",
+    "generate_python_script",
+    "load_design_from_script",
+    "load_script",
     "shapes",
+    "to_python",
     "utility",
     "view",
 ]

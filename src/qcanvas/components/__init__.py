@@ -35,10 +35,17 @@ from qcanvas.components.qubits import (
     DualPadTransmon,
     SinglePadTransmon,
 )
+from qcanvas.components.registry import (
+    COMPONENT_CATALOG,
+    ComponentMeta,
+    get_component_catalog,
+    get_component_meta,
+)
 from qcanvas.components.text import Text, text
 
 __all__ = [
     "AlignmentMarker",
+    "COMPONENT_CATALOG",
     "CPWOpen",
     "CPWShort",
     "CasingMarker",
@@ -47,6 +54,7 @@ __all__ = [
     "ChargeTee",
     "CircularTransmon",
     "Component",
+    "ComponentMeta",
     "CrossTransmon",
     "DualPadTransmon",
     "Launchpad",
@@ -63,6 +71,8 @@ __all__ = [
     "charge_tee",
     "cpw_open",
     "cpw_short",
+    "get_component_catalog",
+    "get_component_meta",
     "launchpad",
     "packaging_marker",
     "read_tee",
