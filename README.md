@@ -1,16 +1,16 @@
 <p align="center">
-  <img src="docs/assets/logo.png" alt="QCanvas Logo" width="180" style="border-radius: 28px;" />
+  <img src="docs/assets/logo.png" alt="SQCanvas Logo" width="180" style="border-radius: 28px;" />
 </p>
 
-<h1 align="center">QCanvas</h1>
+<h1 align="center">SQCanvas</h1>
 
 <p align="center">
-  <b>Superconducting Quantum Circuit CAD & Layout Design Framework</b><br>
+  <b><strong>S</strong>uperconducting <strong>Q</strong>ubit <strong>C</strong>hip <strong>A</strong>nalysis, <strong>N</strong>etlist, <strong>V</strong>isualization, and <strong>A</strong>utomation <strong>S</strong>uite</b><br>
   <sub>A modern, decoupled, plugin-driven EDA studio for superconducting quantum chip design.</sub>
 </p>
 
 <p align="center">
-  <a href="https://github.com/quantum-panda-a/QCanvas/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
+  <a href="https://github.com/quantum-panda-a/SQCanvas/blob/main/LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue.svg" alt="License: MIT" /></a>
   <img src="https://img.shields.io/badge/Python-3.10%2B-brightgreen.svg" alt="Python 3.10+" />
   <img src="https://img.shields.io/badge/Domain-Superconducting%20Qubits-00D2FF.svg" alt="Superconducting Qubits" />
 </p>
@@ -19,14 +19,14 @@
 
 ## 📖 Introduction
 
-**QCanvas** is a modern parametric CAD and layout design framework tailored for superconducting quantum computing chips. It bridges the gap between **code-driven EDA scripting** and **interactive visual design**, empowering quantum researchers and engineers to build, inspect, simulate, and export fabrication-ready lithography masks with speed and precision.
+**SQCanvas** (Superconducting Qubit Chip Analysis, Netlist, Visualization, and Automation Suite) is a modern parametric CAD and layout design framework tailored for superconducting quantum computing chips. It bridges the gap between **code-driven EDA scripting** and **interactive visual design**, empowering quantum researchers and engineers to build, inspect, simulate, and export fabrication-ready lithography masks with speed and precision.
 
 ### Key Highlights & Core Philosophy
 
 - 🧩 **Decoupled Architecture**: Geometric shape generation (`Component`) is strictly separated from rendering and mask production (`Exporter`). Components populate a centralized store without knowing how or where they are drawn.
 - 📦 **Single Source of Truth (`ShapeStore`)**: The `ShapeRecord` dataclass stores primitive polygon geometries, physical layers, operational attributes (positive pattern vs. ground plane `subtract`), and design metadata.
 - 📏 **Seamless Physical Unit Parsing**: Native support for physical dimension strings (`"455um"`, `"10nm"`, `"2.5mm"`, `"300um"`), automatically resolved to micrometres ($\mu\text{m}$) without manual conversions.
-- 🎨 **Interactive CAD Desktop Studio (`qcanvas.gui`)**:
+- 🎨 **Interactive CAD Desktop Studio (`SQCanvas.gui`)**:
   - **Blank Startup Canvas**: Clean wafer substrate view with CAD crosshair, grid, and physical scale bar.
   - **Component Library Palette**: 18+ pre-built superconducting devices categorized into Qubits, Couplers, Ports & Pads, Alignment Markers, and Text.
   - **Interactive Ghost Placement**: Live ghost outline preview, orientation rotation (`[R]`), and micro-meter grid snapping (10 µm, 25 µm, 50 µm, 100 µm).
@@ -35,49 +35,11 @@
   - **9 Preset Scientific Themes**: Nature Clean Light, Cyber Quantum, Nordic Amber, Sycamore Aurora, Prussian & Coral, and more.
 - ⚡ **Code-as-Design Dual-Sync & Live Hot-Reload**:
   - **Export to Python Script (`Ctrl+S`)**: Exports clean, standalone `.py` scripts with delta parameter filtering (only exporting non-default parameters).
-  - **Import Python Script (`Ctrl+O`)**: Opens and visualizes arbitrary QCanvas `.py` design scripts with intelligent format discovery.
-  - **Live Watcher & Hot-Reload**: Edit code in **VS Code / Cursor / PyCharm**; on save, QCanvas automatically reloads and re-renders in milliseconds while preserving view center and zoom.
+  - **Import Python Script (`Ctrl+O`)**: Opens and visualizes arbitrary SQCanvas `.py` design scripts with intelligent format discovery.
+  - **Live Watcher & Hot-Reload**: Edit code in **VS Code / Cursor / PyCharm**; on save, SQCanvas automatically reloads and re-renders in milliseconds while preserving view center and zoom.
 - 🏭 **Multi-Backend Exporter Ecosystem**:
   - **Matplotlib**: Publication-quality scientific figures, vectorized PDFs, PNGs, and inline Jupyter Notebook widgets.
   - **GDSII (`gdstk`)**: One-click generation of semiconductor lithography masks with automated ground plane subtraction.
-
----
-
-## 🏗️ Architecture
-
-```mermaid
-graph TD
-    subgraph Design_Layer [Design & Components]
-        PlanarDesign["PlanarDesign (Chip Container)"]
-        Registry["Component Registry (18+ Quantum Devices)"]
-        Components["Qubits / Couplers / Ports / Markers"]
-    end
-
-    subgraph Data_Layer [Geometric Data Center]
-        ShapeStore["ShapeStore (Single Source of Truth)"]
-    end
-
-    subgraph IO_Layer [Code Generation & Script I/O]
-        CodeGen["python.py (Delta Code Generator)"]
-        Loader["loader.py (Smart Script Loader & Diagnostics)"]
-        Watcher["watcher.py (QFileSystemWatcher Live Hot-Reload)"]
-    end
-
-    subgraph Visual_Layer [Viewer & CAD Studio]
-        GUI["qcanvas.gui (Interactive CAD Desktop)"]
-        Headless["qcanvas.view / qcanvas.display"]
-        Exporters["GDSII Exporter / Matplotlib Exporter"]
-    end
-
-    PlanarDesign --> Components
-    Registry --> Components
-    Components -- "make() generates shapes" --> ShapeStore
-    ShapeStore --> Exporters
-    ShapeStore --> Visual_Layer
-
-    GUI <-->|Ctrl+S Export / Ctrl+O Import| IO_Layer
-    Watcher -.->|External Editor Ctrl+S| GUI
-```
 
 ---
 
@@ -89,8 +51,8 @@ We recommend using [`uv`](https://github.com/astral-sh/uv), a fast modern Python
 
 ```bash
 # Clone the repository
-git clone https://github.com/quantum-panda-a/QCanvas.git
-cd QCanvas
+git clone https://github.com/quantum-panda-a/SQCanvas.git
+cd SQCanvas
 
 # Install dependencies and sync virtual environment with uv
 uv sync
@@ -102,17 +64,15 @@ Or install with standard `pip`:
 pip install -e .
 ```
 
----
-
 ### 2. Python Scripting API Example
 
 Create a superconducting chip layout with Transmons, Readout Claws, and Launchpads in Python:
 
 ```python
-import qcanvas
-from qcanvas.components import ChargeClaw, CrossTransmon, DualPadTransmon, Launchpad
-from qcanvas.designs import PlanarDesign
-from qcanvas.exporters import export_gds
+import SQCanvas
+from SQCanvas.components import ChargeClaw, CrossTransmon, DualPadTransmon, Launchpad
+from SQCanvas.designs import PlanarDesign
+from SQCanvas.exporters import export_gds
 
 # 1. Initialize a planar chip layout container
 design = PlanarDesign()
@@ -155,7 +115,7 @@ Launchpad(
 )
 
 # 5. Export Python script, GDSII mask, and visualization image
-qcanvas.export_python_script(design, "my_quantum_chip.py")
+SQCanvas.export_python_script(design, "my_quantum_chip.py")
 export_gds(design, filepath="my_quantum_chip.gds", ground_plane=True)
 
 # 6. Open interactive CAD GUI
@@ -165,19 +125,19 @@ if __name__ == "__main__":
 
 ---
 
-### 3. Launching the Interactive CAD Studio
+## Launching the Interactive CAD Studio
 
 Launch the full desktop GUI studio:
 
 ```bash
 # Launch interactive CAD Studio (blank canvas ready for component placement)
-uv run python -m qcanvas.gui
+uv run python -m SQCanvas.gui
 
 # Or open an existing layout script directly
-uv run python -m qcanvas.gui path/to/my_quantum_chip.py
+uv run python -m SQCanvas.gui path/to/my_quantum_chip.py
 ```
 
-#### Key GUI Shortcuts & Operations
+### Key GUI Shortcuts & Operations
 
 | Shortcut | Action | Description |
 | :--- | :--- | :--- |
@@ -197,7 +157,7 @@ uv run python -m qcanvas.gui path/to/my_quantum_chip.py
 ## 📂 Module Organization
 
 ```text
-src/qcanvas/
+src/SQCanvas/
 ├── __init__.py           # Top-level public API exports (to_python, load_script, etc.)
 ├── config.py             # Chip geometries, design variables, and scientific theme catalog
 ├── codegen/              # Code generation and script I/O subsystem
@@ -270,3 +230,4 @@ uv run ruff format
 ## 📄 License
 
 This project is licensed under the **MIT License**.
+

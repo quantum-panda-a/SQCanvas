@@ -1,7 +1,7 @@
 [project]
-name = "qcanvas"
+name = "sqcanvas"
 version = "0.1.0"
-description = "Superconducting Qubit Layout Design Framework"
+description = "Superconducting Qubit Chip Analysis, Netlist, Visualization, and Automation Suite"
 readme = "README.md"
 authors = [
     { name = "Xander Parker", email = "pandapeppa2026@gmail.com" }

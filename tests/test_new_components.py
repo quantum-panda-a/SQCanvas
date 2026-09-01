@@ -1,4 +1,4 @@
-"""Unit tests for newly added QCanvas components:
+"""Unit tests for newly added SQCanvas components:
 - CircularTransmon
 - ChargeTee, ChargeClaw, ChargeArc, ReadTee
 - Launchpad, CPWOpen, CPWShort
@@ -8,7 +8,7 @@
 
 import pytest
 
-from qcanvas.components import (
+from sqcanvas.components import (
     ChargeArc,
     ChargeClaw,
     ChargeTee,
@@ -20,7 +20,7 @@ from qcanvas.components import (
     ReadTee,
     Text,
 )
-from qcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.designs.design_planar import PlanarDesign
 
 
 # ==============================================================================

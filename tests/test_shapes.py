@@ -1,6 +1,6 @@
 from shapely.geometry import Polygon
 
-from qcanvas.shapes.store import ShapeRecord, ShapeStore
+from sqcanvas.shapes.store import ShapeRecord, ShapeStore
 
 
 def test_shape_record():

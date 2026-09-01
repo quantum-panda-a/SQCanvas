@@ -5,17 +5,17 @@ import pytest
 from PySide6.QtCore import Qt
 from PySide6.QtWidgets import QApplication
 
-from qcanvas.components import (
+from sqcanvas.components import (
     COMPONENT_CATALOG,
     CrossTransmon,
     DualPadTransmon,
     get_component_catalog,
     get_component_meta,
 )
-from qcanvas.designs.design_planar import PlanarDesign
-from qcanvas.gui.main_window import MainWindow, _xmon_example_design
-from qcanvas.gui.palette import ComponentPaletteWidget
-from qcanvas.gui.placement import PlacementController
+from sqcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.gui.main_window import MainWindow, _xmon_example_design
+from sqcanvas.gui.palette import ComponentPaletteWidget
+from sqcanvas.gui.placement import PlacementController
 
 
 @pytest.fixture(scope="session")

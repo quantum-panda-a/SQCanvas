@@ -3,11 +3,11 @@ import math
 import pytest
 from shapely.geometry import Polygon
 
-from qcanvas.utility.attr_dict import AttrDict
-from qcanvas.utility.exceptions import DimensionError, ExportError, QCanvasError
-from qcanvas.utility.geom_utils import Vector, get_poly_pts, round_coordinate_sequence
-from qcanvas.utility.parsing import get_path, is_true, parse_value, set_path, walk_options
-from qcanvas.utility.units import format_dimension, parse_dimension
+from sqcanvas.utility.attr_dict import AttrDict
+from sqcanvas.utility.exceptions import DimensionError, ExportError, SQCanvasError
+from sqcanvas.utility.geom_utils import Vector, get_poly_pts, round_coordinate_sequence
+from sqcanvas.utility.parsing import get_path, is_true, parse_value, set_path, walk_options
+from sqcanvas.utility.units import format_dimension, parse_dimension
 
 
 def test_attr_dict_nested_and_attributes():
@@ -168,5 +168,5 @@ def test_geom_utils_poly_coords():
 
 
 def test_exceptions_hierarchy():
-    assert issubclass(DimensionError, (QCanvasError, ValueError))
-    assert issubclass(ExportError, (QCanvasError, RuntimeError))
+    assert issubclass(DimensionError, (SQCanvasError, ValueError))
+    assert issubclass(ExportError, (SQCanvasError, RuntimeError))

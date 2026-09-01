@@ -3,11 +3,11 @@ import os
 import pytest
 from PySide6.QtWidgets import QApplication
 
-from qcanvas.components import DualPadTransmon
-from qcanvas.designs.design_planar import PlanarDesign
-from qcanvas.gui.canvas import MplCanvas
-from qcanvas.gui.inspector import PropertyInspector
-from qcanvas.gui.main_window import MainWindow, _demo_design
+from sqcanvas.components import DualPadTransmon
+from sqcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.gui.canvas import MplCanvas
+from sqcanvas.gui.inspector import PropertyInspector
+from sqcanvas.gui.main_window import MainWindow, _demo_design
 
 
 @pytest.fixture(scope="session")
@@ -122,7 +122,7 @@ def test_main_window_with_custom_and_demo_design(qapp):
 
     # Window with demo design
     win = MainWindow(design=demo)
-    assert win.windowTitle() == "QCanvas Viewer"
+    assert win.windowTitle() == "SQCanvas Viewer"
     assert win.component_table.rowCount() == 2
     assert win.component_table.item(0, 0).text() == "Q1"
     assert win.component_table.item(0, 1).text() == "DualPadTransmon"

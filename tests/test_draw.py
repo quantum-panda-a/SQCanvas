@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import pytest
 from shapely.geometry import LineString, Point, Polygon
 
-from qcanvas.draw.basic import (
+from sqcanvas.draw.basic import (
     _iter_func_geom_,
     arc,
     buffer,
@@ -16,7 +16,7 @@ from qcanvas.draw.basic import (
     translate,
     union,
 )
-from qcanvas.draw.mpl import draw_records, figure_spawn
+from sqcanvas.draw.mpl import draw_records, figure_spawn
 
 
 def test_circle():

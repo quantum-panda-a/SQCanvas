@@ -6,12 +6,12 @@ import pytest
 from matplotlib.figure import Figure
 from shapely.geometry import LineString, MultiPolygon, Polygon
 
-from qcanvas.components.qubits import DualPadTransmon
-from qcanvas.config import PRESET_THEMES
-from qcanvas.designs.design_planar import PlanarDesign
-from qcanvas.exporters.base import Exporter
-from qcanvas.exporters.gds import GdsExporter, export_gds
-from qcanvas.exporters.mpl import MatplotlibExporter, export_scene
+from sqcanvas.components.qubits import DualPadTransmon
+from sqcanvas.config import PRESET_THEMES
+from sqcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.exporters.base import Exporter
+from sqcanvas.exporters.gds import GdsExporter, export_gds
+from sqcanvas.exporters.mpl import MatplotlibExporter, export_scene
 
 
 def test_exporter_registry():

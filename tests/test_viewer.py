@@ -1,10 +1,10 @@
 import matplotlib.pyplot as plt
 from matplotlib.figure import Figure
 
-import qcanvas
-from qcanvas.components.qubits import DualPadTransmon
-from qcanvas.designs.design_planar import PlanarDesign
-from qcanvas.viewer import display, view
+import sqcanvas
+from sqcanvas.components.qubits import DualPadTransmon
+from sqcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.viewer import display, view
 
 
 def test_view_top_level_and_module():
@@ -15,7 +15,7 @@ def test_view_top_level_and_module():
     assert isinstance(fig1, Figure)
     plt.close(fig1)
 
-    fig2 = qcanvas.view(design)
+    fig2 = sqcanvas.view(design)
     assert isinstance(fig2, Figure)
     plt.close(fig2)
 

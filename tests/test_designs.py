@@ -1,13 +1,13 @@
 import pytest
 from shapely.geometry import Point
 
-from qcanvas.components.qubits import DualPadTransmon
-from qcanvas.designs.design_base import Design
-from qcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.components.qubits import DualPadTransmon
+from sqcanvas.designs.design_base import Design
+from sqcanvas.designs.design_planar import PlanarDesign
 
 
 def test_design_base():
-    design = Design(metadata={"project": "test_qcanvas"})
+    design = Design(metadata={"project": "test_sqcanvas"})
     assert design.name == "Design"
     assert design.units == "um"
 

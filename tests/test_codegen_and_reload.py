@@ -7,17 +7,17 @@ import pytest
 from PySide6.QtCore import QCoreApplication
 from PySide6.QtWidgets import QApplication
 
-import qcanvas
-from qcanvas.codegen import (
+import sqcanvas
+from sqcanvas.codegen import (
     ScriptLoadError,
     export_python_script,
     generate_python_script,
     load_design_from_script,
 )
-from qcanvas.components import ChargeClaw, CrossTransmon, DualPadTransmon, Launchpad
-from qcanvas.designs.design_planar import PlanarDesign
-from qcanvas.gui.main_window import MainWindow
-from qcanvas.gui.watcher import ScriptWatcher
+from sqcanvas.components import ChargeClaw, CrossTransmon, DualPadTransmon, Launchpad
+from sqcanvas.designs.design_planar import PlanarDesign
+from sqcanvas.gui.main_window import MainWindow
+from sqcanvas.gui.watcher import ScriptWatcher
 
 
 @pytest.fixture(scope="session")
@@ -52,7 +52,7 @@ def test_python_codegen_empty_and_populated(tmp_path):
     )
 
     code = generate_python_script(design)
-    assert "from qcanvas.components import (" in code
+    assert "from sqcanvas.components import (" in code
     assert "ChargeClaw," in code
     assert "DualPadTransmon," in code
     assert "name='Q1'" in code
@@ -74,8 +74,8 @@ def test_script_loader_functional_and_global_style(tmp_path):
     func_script = tmp_path / "functional_chip.py"
     func_script.write_text(
         """
-from qcanvas.designs import PlanarDesign
-from qcanvas.components import DualPadTransmon, Launchpad
+from sqcanvas.designs import PlanarDesign
+from sqcanvas.components import DualPadTransmon, Launchpad
 
 def build_design():
     d = PlanarDesign()
@@ -97,8 +97,8 @@ def build_design():
     global_script = tmp_path / "global_chip.py"
     global_script.write_text(
         """
-from qcanvas.designs import PlanarDesign
-from qcanvas.components import CrossTransmon
+from sqcanvas.designs import PlanarDesign
+from sqcanvas.components import CrossTransmon
 
 design = PlanarDesign()
 CrossTransmon(design, "X1", options={"pos_x": "500um", "pos_y": "-500um"})
@@ -123,7 +123,7 @@ def test_script_loader_diagnostics_and_errors(tmp_path):
     syntax_err_file = tmp_path / "broken_syntax.py"
     syntax_err_file.write_text(
         """
-from qcanvas.designs import PlanarDesign
+from sqcanvas.designs import PlanarDesign
 
 def build_design():
     design = PlanarDesign(
@@ -145,7 +145,7 @@ def build_design():
     runtime_err_file = tmp_path / "broken_runtime.py"
     runtime_err_file.write_text(
         """
-from qcanvas.designs import PlanarDesign
+from sqcanvas.designs import PlanarDesign
 
 def build_design():
     d = PlanarDesign()
@@ -169,17 +169,17 @@ def build_design():
 
 
 def test_top_level_helpers_and_aliases(tmp_path):
-    """Test top-level qcanvas.to_python and qcanvas.load_script."""
+    """Test top-level sqcanvas.to_python and sqcanvas.load_script."""
     design = PlanarDesign()
     DualPadTransmon(design, "Q1")
 
-    py_str = qcanvas.to_python(design)
+    py_str = sqcanvas.to_python(design)
     assert "DualPadTransmon" in py_str
 
     script_path = tmp_path / "alias_test.py"
-    qcanvas.export_python_script(design, script_path)
+    sqcanvas.export_python_script(design, script_path)
 
-    reloaded = qcanvas.load_script(script_path)
+    reloaded = sqcanvas.load_script(script_path)
     assert "Q1" in reloaded.components
 
 
@@ -215,7 +215,7 @@ def test_script_watcher_live_reload(tmp_path, qapp):
 def test_main_window_open_save_and_hot_reload(tmp_path, qapp):
     """Test MainWindow script open, save, window title, and hot reload workflows."""
     win = MainWindow(design=None)
-    assert win.windowTitle() == "QCanvas Viewer"
+    assert win.windowTitle() == "SQCanvas Viewer"
 
     # 1. Place a component and save script
     DualPadTransmon(win.design, "Q1", options={"pos_x": "100um", "pos_y": "200um"})
@@ -230,7 +230,7 @@ def test_main_window_open_save_and_hot_reload(tmp_path, qapp):
     win.new_design()
     assert len(win.design.components) == 0
     assert win._active_script_path is None
-    assert win.windowTitle() == "QCanvas Viewer"
+    assert win.windowTitle() == "SQCanvas Viewer"
 
     # 3. Open saved script
     win.open_python_script(filepath=script_path)
@@ -241,8 +241,8 @@ def test_main_window_open_save_and_hot_reload(tmp_path, qapp):
     # 4. Simulate external edit and hot-reload
     script_path.write_text(
         """
-from qcanvas.designs import PlanarDesign
-from qcanvas.components import CrossTransmon, ChargeClaw
+from sqcanvas.designs import PlanarDesign
+from sqcanvas.components import CrossTransmon, ChargeClaw
 
 def build_design():
     d = PlanarDesign()

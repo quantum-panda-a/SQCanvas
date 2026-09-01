@@ -1,7 +1,7 @@
 import pytest
 from matplotlib.figure import Figure
 
-from qcanvas.gui.interaction import CanvasInteraction
+from sqcanvas.gui.interaction import CanvasInteraction
 
 
 def test_compute_zoom_range():
