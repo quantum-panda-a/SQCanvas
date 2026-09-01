@@ -240,10 +240,26 @@ class MainWindow(QMainWindow):
 
         return doc
 
+    def close_tab(self, index: int | None = None) -> None:
+        """Close a tab by index, or the currently active tab if index is None."""
+        if index is None:
+            if not hasattr(self, "tab_widget"):
+                return
+            index = self.tab_widget.currentIndex()
+        self._on_tab_close_requested(index)
+
     def _on_tab_close_requested(self, index: int) -> None:
-        """Close an individual tab by index."""
+        """Close an individual tab by index.
+
+        If only one tab is currently open, closing the tab closes the application window.
+        """
         if index < 0 or index >= len(self._documents):
             return
+
+        if len(self._documents) <= 1:
+            self.close()
+            return
+
         doc = self._documents[index]
 
         # Clean up listeners and watcher
@@ -264,12 +280,8 @@ class MainWindow(QMainWindow):
         self._documents.pop(index)
         self.tab_widget.removeTab(index)
 
-        # If no tabs remain, create a fresh untitled tab
-        if len(self._documents) == 0:
-            self.new_design()
-        else:
-            # Refresh active tab UI
-            self._on_tab_changed(self.tab_widget.currentIndex())
+        # Refresh active tab UI
+        self._on_tab_changed(self.tab_widget.currentIndex())
 
     def _on_tab_changed(self, index: int) -> None:
         """Handle switching active document tab."""
@@ -429,6 +441,11 @@ class MainWindow(QMainWindow):
         act_save_as.setShortcut(QKeySequence("Ctrl+Shift+S"))
         act_save_as.triggered.connect(lambda: self.save_python_script(save_as=True))
         file_menu.addAction(act_save_as)
+
+        act_close_tab = QAction("&Close Tab", self)
+        act_close_tab.setShortcut(QKeySequence("Ctrl+W"))
+        act_close_tab.triggered.connect(lambda: self.close_tab())
+        file_menu.addAction(act_close_tab)
 
         file_menu.addSeparator()
 
@@ -1223,6 +1240,23 @@ class MainWindow(QMainWindow):
                 self.watcher.watch(path)
             self.status_dot.setText(f"📂 {path.name}")
             self.hint_label.setText(f"Opened script: {path}  ·  ⚡ Live Watch Active")
+
+    def handle_external_open_request(self, filepath: str | Path | None = None, theme: str | None = None) -> None:
+        """Handle an external open request forwarded from another CLI invocation via IPC."""
+        if theme:
+            try:
+                self.set_theme_preset(theme)
+            except Exception:  # noqa: BLE001, S110
+                pass
+
+        if filepath:
+            path = Path(filepath)
+            if path.exists():
+                self.open_python_script(path)
+
+        self.showNormal()
+        self.raise_()
+        self.activateWindow()
 
     def save_python_script(self, filepath: str | Path | None = None, save_as: bool = False) -> None:
         """Export current design tab as a Python script and attach live reload watcher."""

@@ -54,14 +54,27 @@ We recommend using [`uv`](https://github.com/astral-sh/uv), a fast modern Python
 git clone https://github.com/quantum-panda-a/SQCanvas.git
 cd SQCanvas
 
-# Install dependencies and sync virtual environment with uv
+# Install dependencies and register 'sqcanvas' globally
 uv sync
+uv tool install --editable .
 ```
 
 Or install with standard `pip`:
 
 ```bash
 pip install -e .
+```
+
+#### Uninstallation
+
+To remove the global command and uninstall SQCanvas:
+
+```bash
+# If registered globally via uv tool:
+uv tool uninstall sqcanvas
+
+# If installed via pip:
+pip uninstall sqcanvas
 ```
 
 ### 2. Python Scripting API Example
@@ -127,15 +140,45 @@ if __name__ == "__main__":
 
 ## Launching the Interactive CAD Studio
 
-Launch the full desktop GUI studio:
+Launch the full desktop GUI studio directly from any terminal:
 
 ```bash
-# Launch interactive CAD Studio (blank canvas ready for component placement)
-uv run python -m SQCanvas.gui
+# Launch interactive CAD Studio (opens GUI independently, no extra console window)
+sqcanvas
 
-# Or open an existing layout script directly
-uv run python -m SQCanvas.gui path/to/my_quantum_chip.py
+# Open an existing layout script (automatically joins existing window as a new tab)
+sqcanvas path/to/my_quantum_chip.py
+
+# Launch with a specific color theme preset
+sqcanvas path/to/my_quantum_chip.py --theme nordic
+
+# Run attached in foreground (blocks terminal with console logs)
+sqcanvas --foreground
+
+# Force open in a fresh new window
+sqcanvas --new-instance
 ```
+
+---
+
+## 🛠️ Powerful Headless CLI Suite
+
+SQCanvas provides a headless command-line suite for automated mask generation, batch rendering, netlist inspection, and health diagnosis:
+
+```bash
+# 1. Environment & Dependencies Diagnostics
+sqcanvas doctor
+
+# 2. Inspect Quantum Chip Dimensions, Bounding Box & Netlist
+sqcanvas inspect path/to/my_quantum_chip.py
+
+# 3. Headless GDSII Lithography Mask Export
+sqcanvas export path/to/my_quantum_chip.py -o mask.gds --format gds
+
+# 4. Publication-Ready Figure Export (PNG, PDF, SVG)
+sqcanvas export path/to/my_quantum_chip.py -o figure.png --theme paper --dpi 300
+```
+
 
 ### Key GUI Shortcuts & Operations
 

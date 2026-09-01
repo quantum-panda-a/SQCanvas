@@ -77,18 +77,48 @@ def test_tab_individual_closing(qapp):
     win.close()
 
 
-def test_tab_close_all_recreates_blank(qapp):
-    """Test that closing all tabs automatically creates a fresh blank tab."""
+def test_tab_close_single_tab_closes_gui(qapp, monkeypatch):
+    """Test that closing the only open tab is equivalent to closing the GUI."""
     win = MainWindow(design=None)
     assert win.tab_widget.count() == 1
 
+    closed = False
+    original_close = win.close
+
+    def mock_close():
+        nonlocal closed
+        closed = True
+        return original_close()
+
+    monkeypatch.setattr(win, "close", mock_close)
+
     # Close the only tab
     win._on_tab_close_requested(0)
-    assert win.tab_widget.count() == 1
-    assert "Untitled" in win.tab_widget.tabText(0)
-    assert win.component_table.rowCount() == 0
+    assert closed is True
 
-    win.close()
+
+def test_close_tab_method_and_shortcut(qapp, monkeypatch):
+    """Test win.close_tab() method closes tab or GUI when only one tab is open."""
+    win = MainWindow(design=None)
+    win.load_example_design("transmons")
+    assert win.tab_widget.count() == 2
+
+    # Close active tab (index 1) via close_tab()
+    win.close_tab()
+    assert win.tab_widget.count() == 1
+
+    # Now with 1 tab left, close_tab() should trigger window close
+    closed = False
+    original_close = win.close
+
+    def mock_close():
+        nonlocal closed
+        closed = True
+        return original_close()
+
+    monkeypatch.setattr(win, "close", mock_close)
+    win.close_tab()
+    assert closed is True
 
 
 def test_open_script_with_open_gui_in_main_block_does_not_spawn_rogue_window(tmp_path, qapp):
